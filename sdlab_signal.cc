@@ -380,7 +380,8 @@ void *recv_thread(void *param){
   int id = 0, prev_id = 0;
   while(idx < DATA_SIZE){
     e->comm->data_recv(e->recv_buf, sizeof(int) * RECV_BUF_SIZE);
-    id = ntohl(*(int*)(e->recv_buf));
+    int *pi = (int*) e->recv_buf;
+    id = ntohl(*pi);
     if(idx == 0 && id != 0){
       // drop packets until receiving a start packet.
       continue;

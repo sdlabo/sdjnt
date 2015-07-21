@@ -18,14 +18,6 @@
 
 int phase_offset = 0;
 
-//boost::mutex mutex_sine;
-
-//boost::mutex sdlab_mutex_channel_a;
-//boost::mutex sdlab_mutex_channel_b;
-
-//boost::mutex sdlab_mutex_cross1;
-//boost::mutex sdlab_mutex_cross10;
-//boost::mutex sdlab_mutex_cross_total;
 
 double sdlab_channel_a_buf[SDLAB_PLOT_LEN];
 double sdlab_channel_b_buf[SDLAB_PLOT_LEN];
@@ -92,14 +84,14 @@ int sprintf_channel_a(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_channel_a);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = ((double)sdlab_channel_a_buf[i]) / 65535.0 * 100.0;
+      tmpbuf[i] = ((double)sdlab_channel_a_buf[i]) / 65535.0 * 100.0 + 50;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -128,14 +120,14 @@ int sprintf_channel_b(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_channel_b);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = ((double)sdlab_channel_b_buf[i]) / 65535.0 * 100.0;
+      tmpbuf[i] = ((double)sdlab_channel_b_buf[i]) / 65535.0 * 100.0 + 50;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -161,16 +153,15 @@ int sprintf_cross1_re(char* buf, double amp, int num)
   }
 
   {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000000000001 * sdlab_cross1_re_buf[i] + 50.0;
+      tmpbuf[i] = sdlab_cross1_re_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -196,16 +187,15 @@ int sprintf_cross1_im(char* buf, double amp, int num)
   }
 
   {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000000000001 * sdlab_cross1_im_buf[i] + 50.0;
+      tmpbuf[i] = sdlab_cross1_im_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -233,14 +223,15 @@ int sprintf_fft1_a(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000001 * sdlab_fft1_a_buf[i] + 25.0;
+//      tmpbuf[i] = 1.0e-6 * 1.0e-6 * sdlab_fft1_a_buf[i] + 25.0;
+      tmpbuf[i] = 1.0e-16 * sdlab_fft1_a_buf[i] + 25.0;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -268,14 +259,14 @@ int sprintf_fft1_b(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000001 * sdlab_fft1_b_buf[i] + 25.0;
+      tmpbuf[i] = 1.0e-16 * sdlab_fft1_b_buf[i] + 25.0;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -305,14 +296,14 @@ int sprintf_cross10_re(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000000000001 * sdlab_cross10_re_buf[i] + 50.0;
+      tmpbuf[i] = sdlab_cross10_re_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -340,14 +331,14 @@ int sprintf_cross10_im(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000000000001 * sdlab_cross10_im_buf[i] + 50.0;
+      tmpbuf[i] = sdlab_cross10_im_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -375,14 +366,14 @@ int sprintf_fft10_a(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000001 * sdlab_fft10_a_buf[i] + 25.0;
+      tmpbuf[i] = 1.0e-16 * sdlab_fft10_a_buf[i] + 25;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -410,14 +401,14 @@ int sprintf_fft10_b(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000001 * sdlab_fft10_b_buf[i] + 25.0;
+      tmpbuf[i] = 1.0e-16 * sdlab_fft10_b_buf[i] + 25.0;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -448,14 +439,15 @@ int sprintf_cross_total_re(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000000000001 * sdlab_cross_total_re_buf[i] + 50.0;
+//      tmpbuf[i] = 0.000000000001 * sdlab_cross_total_re_buf[i] + 50.0;
+      tmpbuf[i] = sdlab_cross_total_re_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -483,14 +475,15 @@ int sprintf_cross_total_im(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000000000001 * sdlab_cross_total_im_buf[i] + 50.0;
+//      tmpbuf[i] = 0.000000000001 * sdlab_cross_total_im_buf[i] + 50.0;
+      tmpbuf[i] = sdlab_cross_total_im_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -518,14 +511,14 @@ int sprintf_fft_total_a(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000001 * sdlab_fft_total_a_buf[i] + 25.0;
+      tmpbuf[i] = 1.0e-16 * sdlab_fft_total_a_buf[i] + 25.0;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
@@ -553,14 +546,14 @@ int sprintf_fft_total_b(char* buf, double amp, int num)
   {
 //    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
     for(i = 0; i < num; i++){
-      tmpbuf[i] = 0.000001 * sdlab_fft_total_b_buf[i] + 25.0;
+      tmpbuf[i] = 1.0e-16 * sdlab_fft_total_b_buf[i] + 25.0;
     }
   }
 
   len += sprintf(buf, "[");
-  len += sprintf(buf + len, "%f", amp * tmpbuf[0]);
+  len += sprintf(buf + len, "%5e", amp * tmpbuf[0]);
   for(i = 1; i < num; i++){
-    len += sprintf(buf + len, ", %f", amp * tmpbuf[i]);
+    len += sprintf(buf + len, ", %5e", amp * tmpbuf[i]);
   }
   len += sprintf(buf + len, "]");
 
