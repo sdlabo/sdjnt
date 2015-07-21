@@ -109,10 +109,10 @@ static void sys_init(struct system_env *sys){
 
   // buffers are allocated
   sys->result[0] = (double*)malloc_or_die(
-    sizeof(double) * DATA_SIZE * 4 * RESULT_SAVE_TIME,
+    sizeof(double) * DATA_SIZE / 2 * 4,
     "cannot allocate save result buffer (0)");
   sys->result[1] = (double*)malloc_or_die(
-    sizeof(double) * DATA_SIZE * 4 * RESULT_SAVE_TIME,
+    sizeof(double) * DATA_SIZE /2 * 4,
     "cannot allocate save result buffer (1)");
 
   sys->result_count = 0;
@@ -190,18 +190,24 @@ struct calc_arg{
  */
 void save_result(struct calc_arg *arg){
   double a, b, c, d;
+  double x_re[DATA_SIZE / 2];
+  double x_im[DATA_SIZE / 2];
+  double p_a[DATA_SIZE / 2];
+  double p_b[DATA_SIZE / 2];
 
-  int offset = arg->sys->result_count * DATA_SIZE * 4;
-
-  for(int i = 0; i < DATA_SIZE; i++){
+  for(int i = 0; i < DATA_SIZE / 2; i++){
     a = arg->e0->fft_work[2 * i];   // F(a)-Re
     b = arg->e0->fft_work[2 * i + 1]; // F(a)-Im
     c = arg->e1->fft_work[2 * i];   // F(b)-Re
     d = arg->e1->fft_work[2 * i + 1]; // F(b)-Im
-    arg->sys->cur[4 * i + 0 + offset] = a * c + b * d;
-    arg->sys->cur[4 * i + 1 + offset] = b * c - a * d;
-    arg->sys->cur[4 * i + 2 + offset] = a * a + b * b;
-    arg->sys->cur[4 * i + 3 + offset] = c * c + d * d;
+    x_re[i] = a * c + b * d;
+    x_im[i] = b * c - a * d;
+    p_a[i] = a * a + b * b;
+    p_b[i] = c * c + d * d;
+    arg->sys->cur[DATA_SIZE / 2 * 0 + i] += x_re[i];
+    arg->sys->cur[DATA_SIZE / 2 * 1 + i] += x_im[i];
+    arg->sys->cur[DATA_SIZE / 2 * 2 + i] += p_a[i];
+    arg->sys->cur[DATA_SIZE / 2 * 3 + i] += p_b[i];
   }
 
 //  boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
@@ -209,27 +215,29 @@ void save_result(struct calc_arg *arg){
   {
     result_total++;
     for(int i = 0; i < SDLAB_PLOT_LEN; i++){
-      sdlab_cross1_re_buf[i] = arg->sys->cur[4 * i + 0 + offset];
-      data_cross10_re[i] += arg->sys->cur[4 * i + 0 + offset];
-      data_cross_total_re[i] += arg->sys->cur[4 * i + 0 + offset];
+      sdlab_cross1_re_buf[i] = x_re[i];
+      sdlab_cross1_im_buf[i] = x_im[i];
+      sdlab_fft1_a_buf[i] = p_a[i];
+      sdlab_fft1_b_buf[i] = p_b[i];
+
+      data_cross10_re[i] = arg->sys->cur[DATA_SIZE / 2 * 0 + i];
+      data_cross10_im[i] = arg->sys->cur[DATA_SIZE / 2 * 1 + i];
+      data_fft10_a[i] = arg->sys->cur[DATA_SIZE / 2 * 2 + i];
+      data_fft10_b[i] = arg->sys->cur[DATA_SIZE / 2 * 3 + i];
+
+      data_cross_total_re[i] += x_re[i];
       sdlab_cross_total_re_buf[i] = data_cross_total_re[i] /
         ((double)result_total);
 
-      sdlab_cross1_im_buf[i] = arg->sys->cur[4 * i + 1 + offset];
-      data_cross10_im[i] += arg->sys->cur[4 * i + 1 + offset];
-      data_cross_total_im[i] += arg->sys->cur[4 * i + 1 + offset];
+      data_cross_total_im[i] += x_im[i];
       sdlab_cross_total_im_buf[i] = data_cross_total_im[i] /
         ((double)result_total);
 
-      sdlab_fft1_a_buf[i] = arg->sys->cur[4 * i + 2 + offset];
-      data_fft10_a[i] += arg->sys->cur[4 * i + 2 + offset];
-      data_fft_total_a[i] += arg->sys->cur[4 * i + 2 + offset];
+      data_fft_total_a[i] += p_a[i];
       sdlab_fft_total_a_buf[i] = data_fft_total_a[i] /
         ((double)result_total);
 
-      sdlab_fft1_b_buf[i] = arg->sys->cur[4 * i + 3 + offset];
-      data_fft10_b[i] += arg->sys->cur[4 * i + 3 + offset];
-      data_fft_total_b[i] += arg->sys->cur[4 * i + 3 + offset];
+      data_fft_total_b[i] += p_b[i];
       sdlab_fft_total_b_buf[i] = data_fft_total_b[i] /
         ((double)result_total);
     }
@@ -247,8 +255,10 @@ void* dump_thread(void *param){
   struct calc_arg *arg = (struct calc_arg*) param;
   // make file name and open the file
   char str[256];
-  sprintf(str, "%s_%s_%08d",
-          TMPDATA_BASE, arg->sys->file_postfix, arg->sys->file_postfix_count);
+  sprintf(str, "%s_%s_%08d_%d",
+          TMPDATA_BASE, arg->sys->file_postfix,
+          arg->sys->file_postfix_count,
+          RESULT_SAVE_TIME);
 
   printf("opening %s\n", str);
   FILE *fp;
@@ -267,7 +277,7 @@ void* dump_thread(void *param){
   }
 
   // write all data in the internal buffer
-  fwrite(arg->sys->dump, sizeof(double), 4 * DATA_SIZE * RESULT_SAVE_TIME, fp);
+  fwrite(arg->sys->dump, sizeof(double), 4 * DATA_SIZE / 2, fp);
   fflush(fp);
   fclose(fp);
 
@@ -495,8 +505,13 @@ void* sdlab_signal_thread(void *param)
     // do FFT operation
     printf("kick calc\n");
 //    boost::thread th(&calc, &arg);
+
+    pthread_attr_t tattr;
+    pthread_attr_init(&tattr);
+    pthread_attr_setstacksize(&tattr, 128 * 1024 * 1024);
+
     pthread_t th;
-    pthread_create(&th, NULL, calc_thread, &arg);
+    pthread_create(&th, &tattr, calc_thread, &arg);
     pthread_detach(th);
   }
 
