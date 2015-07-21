@@ -385,7 +385,7 @@ void *recv_thread(void *param){
     prev_id = id;
     short *data = (short*)(e->recv_buf + sizeof(int));
     for(int i = 0; i < DATA_BURST_SIZE; i++){
-      unsigned short s = ntohs(data[i]);
+      short s = ntohs(data[i]);
       e->cur[2 * (idx + i) + 0] = ((double) s); // Re
       e->cur[2 * (idx + i) + 1] = (double) 0; // Im
     }
