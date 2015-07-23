@@ -281,6 +281,8 @@ void* dump_thread(void *param){
   fflush(fp);
   fclose(fp);
 
+  bzero(arg->sys->dump, sizeof(double) * 4 * DATA_SIZE / 2);
+
   arg->sys->dump_count++;
   // counter is cleared every CREATE_NEW_FILE_TIME times.
   if(arg->sys->dump_count == CREATE_NEW_FILE_TIME){
