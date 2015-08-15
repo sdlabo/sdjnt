@@ -164,7 +164,7 @@ void env_free(struct env *e){
 void *fft_thread(void *param)
 {
   struct env *e = (struct env*) param;
-  cdft(DATA_SIZE, -1, e->fft_work, e->ip, e->w);
+  cdft(DATA_SIZE * 2, -1, e->fft_work, e->ip, e->w);
 
   return NULL;
 }
