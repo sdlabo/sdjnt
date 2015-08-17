@@ -367,6 +367,10 @@ int init_server()
   server_addr.sin_family = AF_INET;
   server_addr.sin_port = htons(SERVER_PORT);
   server_addr.sin_addr.s_addr = INADDR_ANY;
+
+  int yes = 1;
+  setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
+
   ret = bind(sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
   if(ret < 0){
     SDLAB_ERROR("bind");

@@ -20,17 +20,8 @@
 // the size of a length of data in a UDP packet
 #define DATA_BURST_SIZE  (512)
 
-// the number of data stored in a file
-//#define DATA_PER_FILE   (100) 
-// the time to write the data into the file per computations.
-//#define RESULT_SAVE_TIME (20) 
-
-// the number of data stored in a file
-#define DATA_PER_FILE   (5)
 // the time to write the data into the file per computations.
 #define RESULT_SAVE_TIME (5)
-// the time to create new file per saving.
-#define CREATE_NEW_FILE_TIME (DATA_PER_FILE/RESULT_SAVE_TIME)
 // the buffer size more than 2 has not been supported yet
 #define NUM_OF_ENV_BUFFER (2)
 
@@ -83,7 +74,6 @@ struct system_env{
   double * cur; // a pointer to the active buffer to pack result
   double * dump; // a pointer to the buffer to save HDD
   int result_count; // the number of buffering results
-  int dump_count; // the number of results saving in current opening file
 };
 
 void *fft_thread(void *param); // FFT wrapper function.
@@ -116,7 +106,6 @@ static void sys_init(struct system_env *sys){
     "cannot allocate save result buffer (1)");
 
   sys->result_count = 0;
-  sys->dump_count = 0;
   sys->file_postfix_count = 0;
   sys->cur = sys->result[0];
 }
@@ -164,7 +153,7 @@ void env_free(struct env *e){
 void *fft_thread(void *param)
 {
   struct env *e = (struct env*) param;
-  cdft(DATA_SIZE, -1, e->fft_work, e->ip, e->w);
+  cdft(DATA_SIZE * 2, -1, e->fft_work, e->ip, e->w);
 
   return NULL;
 }
@@ -262,15 +251,10 @@ void* dump_thread(void *param){
 
   printf("opening %s\n", str);
   FILE *fp;
-  if(arg->sys->dump_count == 0){
     // the file is created newly at first.
-    printf("create: %s\n", str);
-    fp = fopen(str, "wb");
-  }else{
-    // otherwise, the file is open in append mode.
-    printf("open: %s (%d)\n", str, arg->sys->dump_count);
-    fp = fopen(str, "ab");
-  }
+  printf("create: %s\n", str);
+  fp = fopen(str, "wb");
+
   if(fp == NULL){
     fprintf(stderr, "cannot open file: %s", str);
     exit(0);
@@ -282,13 +266,7 @@ void* dump_thread(void *param){
   fclose(fp);
 
   bzero(arg->sys->dump, sizeof(double) * 4 * DATA_SIZE / 2);
-
-  arg->sys->dump_count++;
-  // counter is cleared every CREATE_NEW_FILE_TIME times.
-  if(arg->sys->dump_count == CREATE_NEW_FILE_TIME){
-    arg->sys->dump_count = 0;
-    arg->sys->file_postfix_count++;
-  }
+  arg->sys->file_postfix_count++;
 
   printf("\t\t\tfile save done\n");
 
