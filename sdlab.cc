@@ -4,6 +4,12 @@
 #include "sdlab_http.h"
 #include "sdlab_signal.h"
 
+
+void sigint_handler(int sig)
+{
+  exit(0);
+}
+
 void create_http_thread(pthread_t *p_th)
 {
   pthread_create(p_th, NULL, sdlab_http_thread, NULL);
@@ -19,6 +25,7 @@ void create_signal_thread(pthread_t *p_th)
 
 int main(int argc, char **argv)
 {
+  signal(SIGINT, sigint_handler);
   pthread_t http_thread, signal_thread;
   create_http_thread(&http_thread);
   create_signal_thread(&signal_thread);
