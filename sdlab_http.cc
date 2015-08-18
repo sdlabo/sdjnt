@@ -106,6 +106,10 @@ void parse_status_code(char* status, info_type* info)
   strcpy(info->cmd, cmd);
   strcpy(info->path, path);
 
+  if(strcmp(info->path, "/") == 0){
+    strcpy(info->path, "/index.html");
+  }
+
   if(strcmp(version, "HTTP/0.9") == 0){
     info->version = 0.9;
   }if(strcmp(version, "HTTP/1.0") == 0){
@@ -223,7 +227,7 @@ int parse_header(char* buf, int len, info_type *info)
   DEBUG("CRLFCRLF = %d, status_end = %d\n", CRLFCRLF, status_end);
   DEBUG("header_end_index = %d, content_length = %d, len = %d\n",
         header_end_index, info->content_length, len);
-  
+
   if(state == PARSE_NAME &&
      status_end == CRLFCRLF &&
      header_end_index + info->content_length + 1 >= len){
@@ -272,7 +276,8 @@ void* thread_session(void *param){
   DEBUG("filename = %s\n", filename);
 
   if(strcmp(info.path, "/") == 0){
-    send_404(sock_client);
+    printf("impossible to come here!!!\n");
+    exit(-1);
   }else if(strcmp(filename, "html") == 0){
     send_404(sock_client);
   }else if(strcmp(info.path, "/signal_sine") == 0){
@@ -358,10 +363,10 @@ int init_server()
   while(phost->h_addr_list[n] != NULL){
     struct in_addr *ia;
     ia = (struct in_addr *)phost->h_addr_list[n];
-    printf("http://%s:%d/006_sdjnt.html\n", inet_ntoa(*ia), SERVER_PORT);
+    printf("http://%s:%d/\n", inet_ntoa(*ia), SERVER_PORT);
     n++;
   }
-  printf("http://127.0.0.1:%d/006_sdjnt.html\n", SERVER_PORT);
+  printf("http://127.0.0.1:%d/\n", SERVER_PORT);
 
   bzero(&server_addr, sizeof(server_addr));
   server_addr.sin_family = AF_INET;
@@ -454,9 +459,11 @@ void send_file(int sock, char* filename, info_type *info, struct stat *sbuf)
   fclose(fp);
 }
 
+extern void init_sdlab_var();
 
 void* sdlab_http_thread(void* param)
 {
+  init_sdlab_var();
   int sock_server = init_server();
   signal(SIGPIPE , SIG_IGN);
 
