@@ -19,23 +19,23 @@
 int phase_offset = 0;
 
 
-double sdlab_channel_a_buf[SDLAB_PLOT_LEN];
-double sdlab_channel_b_buf[SDLAB_PLOT_LEN];
+double bridge_channel_a[BRIDGE_LEN];
+double bridge_channel_b[BRIDGE_LEN];
 
-double sdlab_cross1_re_buf[SDLAB_PLOT_LEN];
-double sdlab_cross1_im_buf[SDLAB_PLOT_LEN];
-double sdlab_fft1_a_buf[SDLAB_PLOT_LEN];
-double sdlab_fft1_b_buf[SDLAB_PLOT_LEN];
+double bridge_cross1_re[BRIDGE_LEN];
+double bridge_cross1_im[BRIDGE_LEN];
+double bridge_fft1_a[BRIDGE_LEN];
+double bridge_fft1_b[BRIDGE_LEN];
 
-double sdlab_cross10_re_buf[SDLAB_PLOT_LEN];
-double sdlab_cross10_im_buf[SDLAB_PLOT_LEN];
-double sdlab_fft10_a_buf[SDLAB_PLOT_LEN];
-double sdlab_fft10_b_buf[SDLAB_PLOT_LEN];
+double bridge_cross10_re[BRIDGE_LEN];
+double bridge_cross10_im[BRIDGE_LEN];
+double bridge_fft10_a[BRIDGE_LEN];
+double bridge_fft10_b[BRIDGE_LEN];
 
-double sdlab_cross_total_re_buf[SDLAB_PLOT_LEN];
-double sdlab_cross_total_im_buf[SDLAB_PLOT_LEN];
-double sdlab_fft_total_a_buf[SDLAB_PLOT_LEN];
-double sdlab_fft_total_b_buf[SDLAB_PLOT_LEN];
+double bridge_cross_total_re[BRIDGE_LEN];
+double bridge_cross_total_im[BRIDGE_LEN];
+double bridge_fft_total_a[BRIDGE_LEN];
+double bridge_fft_total_b[BRIDGE_LEN];
 
 int noprintf(const char *s, ...)
 {
@@ -73,19 +73,16 @@ int sprintf_channel_a(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_udpwave");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_channel_a);
-    for(i = 0; i < num; i++){
-      tmpbuf[i] = ((double)sdlab_channel_a_buf[i]) / 65535.0 * 100.0 + 50;
-    }
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = ((double)bridge_channel_a[i]) / 65535.0 * 100.0 + 50;
   }
 
   len += sprintf(buf, "[");
@@ -109,19 +106,17 @@ int sprintf_channel_b(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_channel_b");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_channel_b);
-    for(i = 0; i < num; i++){
-      tmpbuf[i] = ((double)sdlab_channel_b_buf[i]) / 65535.0 * 100.0 + 50;
-    }
+
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = ((double)bridge_channel_b[i]) / 65535.0 * 100.0 + 50;
   }
 
   len += sprintf(buf, "[");
@@ -144,9 +139,9 @@ int sprintf_cross1_re(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_cross1_re");
     exit(0);
@@ -154,7 +149,7 @@ int sprintf_cross1_re(char* buf, double amp, int num)
 
   {
     for(i = 0; i < num; i++){
-      tmpbuf[i] = sdlab_cross1_re_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
+      tmpbuf[i] = bridge_cross1_re[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
     }
   }
 
@@ -178,9 +173,9 @@ int sprintf_cross1_im(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_cross1_im");
     exit(0);
@@ -188,7 +183,7 @@ int sprintf_cross1_im(char* buf, double amp, int num)
 
   {
     for(i = 0; i < num; i++){
-      tmpbuf[i] = sdlab_cross1_im_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
+      tmpbuf[i] = bridge_cross1_im[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
     }
   }
 
@@ -212,20 +207,16 @@ int sprintf_fft1_a(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_fft1_a");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
-    for(i = 0; i < num; i++){
-//      tmpbuf[i] = 1.0e-6 * 1.0e-6 * sdlab_fft1_a_buf[i] + 25.0;
-      tmpbuf[i] = 1.0e-16 * sdlab_fft1_a_buf[i] + 25.0;
-    }
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = 1.0e-16 * bridge_fft1_a[i] + 25.0;
   }
 
   len += sprintf(buf, "[");
@@ -248,19 +239,16 @@ int sprintf_fft1_b(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_fft1_b");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
-    for(i = 0; i < num; i++){
-      tmpbuf[i] = 1.0e-16 * sdlab_fft1_b_buf[i] + 25.0;
-    }
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = 1.0e-16 * bridge_fft1_b[i] + 25.0;
   }
 
   len += sprintf(buf, "[");
@@ -285,19 +273,16 @@ int sprintf_cross10_re(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_cross10_re");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
-    for(i = 0; i < num; i++){
-      tmpbuf[i] = sdlab_cross10_re_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
-    }
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = bridge_cross10_re[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
   }
 
   len += sprintf(buf, "[");
@@ -320,19 +305,16 @@ int sprintf_cross10_im(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_cross10_im");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
-    for(i = 0; i < num; i++){
-      tmpbuf[i] = sdlab_cross10_im_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
-    }
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = bridge_cross10_im[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
   }
 
   len += sprintf(buf, "[");
@@ -355,19 +337,16 @@ int sprintf_fft10_a(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_fft10_a");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
-    for(i = 0; i < num; i++){
-      tmpbuf[i] = 1.0e-16 * sdlab_fft10_a_buf[i] + 25;
-    }
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = 1.0e-16 * bridge_fft10_a[i] + 25;
   }
 
   len += sprintf(buf, "[");
@@ -390,19 +369,16 @@ int sprintf_fft10_b(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_fft10_b");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
-    for(i = 0; i < num; i++){
-      tmpbuf[i] = 1.0e-16 * sdlab_fft10_b_buf[i] + 25.0;
-    }
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = 1.0e-16 * bridge_fft10_b[i] + 25.0;
   }
 
   len += sprintf(buf, "[");
@@ -428,20 +404,16 @@ int sprintf_cross_total_re(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_cross_total_re");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
-    for(i = 0; i < num; i++){
-//      tmpbuf[i] = 0.000000000001 * sdlab_cross_total_re_buf[i] + 50.0;
-      tmpbuf[i] = sdlab_cross_total_re_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
-    }
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = bridge_cross_total_re[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
   }
 
   len += sprintf(buf, "[");
@@ -464,20 +436,16 @@ int sprintf_cross_total_im(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_cross_total_im");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
-    for(i = 0; i < num; i++){
-//      tmpbuf[i] = 0.000000000001 * sdlab_cross_total_im_buf[i] + 50.0;
-      tmpbuf[i] = sdlab_cross_total_im_buf[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
-    }
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = bridge_cross_total_im[i] / 2.097e6 / 2.097e6 / 2 + 50.0;
   }
 
   len += sprintf(buf, "[");
@@ -500,19 +468,16 @@ int sprintf_fft_total_a(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_fft_total_a");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
-    for(i = 0; i < num; i++){
-      tmpbuf[i] = 1.0e-16 * sdlab_fft_total_a_buf[i] + 25.0;
-    }
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = 1.0e-16 * bridge_fft_total_a[i] + 25.0;
   }
 
   len += sprintf(buf, "[");
@@ -535,19 +500,16 @@ int sprintf_fft_total_b(char* buf, double amp, int num)
 {
   int i;
   int len = 0;
-  double tmpbuf[SDLAB_PLOT_LEN];
+  double tmpbuf[BRIDGE_LEN];
 
-  if(num > SDLAB_PLOT_LEN){
+  if(num > BRIDGE_LEN){
     fprintf(stderr,"error ");
     perror("sprintf_fft_total_b");
     exit(0);
   }
 
-  {
-//    boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
-    for(i = 0; i < num; i++){
-      tmpbuf[i] = 1.0e-16 * sdlab_fft_total_b_buf[i] + 25.0;
-    }
+  for(i = 0; i < num; i++){
+    tmpbuf[i] = 1.0e-16 * bridge_fft_total_b[i] + 25.0;
   }
 
   len += sprintf(buf, "[");
@@ -579,11 +541,8 @@ void send_sinewave(int sock)
   int ret;
   double phase;
 
-  {
-//    boost::mutex::scoped_lock lock(mutex_sine);
-    phase_offset++;
-    phase = ((double) phase_offset) * 2 * M_PI / 30.0;
-  }
+  phase_offset++;
+  phase = ((double) phase_offset) * 2 * M_PI / 30.0;
 
   slen = sprintf_sinewave(sinbuf, 10.0, phase, 1000);
 

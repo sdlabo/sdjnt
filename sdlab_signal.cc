@@ -199,37 +199,33 @@ void save_result(struct calc_arg *arg){
     arg->sys->cur[DATA_SIZE / 2 * 3 + i] += p_b[i];
   }
 
-//  boost::mutex::scoped_lock lock(sdlab_mutex_cross1);
+  result_total++;
+  for(int i = 0; i < BRIDGE_LEN; i++){
+    bridge_cross1_re[i] = x_re[i];
+    bridge_cross1_im[i] = x_im[i];
+    bridge_fft1_a[i] = p_a[i];
+    bridge_fft1_b[i] = p_b[i];
 
-  {
-    result_total++;
-    for(int i = 0; i < SDLAB_PLOT_LEN; i++){
-      sdlab_cross1_re_buf[i] = x_re[i];
-      sdlab_cross1_im_buf[i] = x_im[i];
-      sdlab_fft1_a_buf[i] = p_a[i];
-      sdlab_fft1_b_buf[i] = p_b[i];
+    data_cross10_re[i] = arg->sys->cur[DATA_SIZE / 2 * 0 + i];
+    data_cross10_im[i] = arg->sys->cur[DATA_SIZE / 2 * 1 + i];
+    data_fft10_a[i] = arg->sys->cur[DATA_SIZE / 2 * 2 + i];
+    data_fft10_b[i] = arg->sys->cur[DATA_SIZE / 2 * 3 + i];
 
-      data_cross10_re[i] = arg->sys->cur[DATA_SIZE / 2 * 0 + i];
-      data_cross10_im[i] = arg->sys->cur[DATA_SIZE / 2 * 1 + i];
-      data_fft10_a[i] = arg->sys->cur[DATA_SIZE / 2 * 2 + i];
-      data_fft10_b[i] = arg->sys->cur[DATA_SIZE / 2 * 3 + i];
+    data_cross_total_re[i] += x_re[i];
+    bridge_cross_total_re[i] = data_cross_total_re[i] /
+      ((double)result_total);
 
-      data_cross_total_re[i] += x_re[i];
-      sdlab_cross_total_re_buf[i] = data_cross_total_re[i] /
-        ((double)result_total);
+    data_cross_total_im[i] += x_im[i];
+    bridge_cross_total_im[i] = data_cross_total_im[i] /
+      ((double)result_total);
 
-      data_cross_total_im[i] += x_im[i];
-      sdlab_cross_total_im_buf[i] = data_cross_total_im[i] /
-        ((double)result_total);
+    data_fft_total_a[i] += p_a[i];
+    bridge_fft_total_a[i] = data_fft_total_a[i] /
+      ((double)result_total);
 
-      data_fft_total_a[i] += p_a[i];
-      sdlab_fft_total_a_buf[i] = data_fft_total_a[i] /
-        ((double)result_total);
-
-      data_fft_total_b[i] += p_b[i];
-      sdlab_fft_total_b_buf[i] = data_fft_total_b[i] /
-        ((double)result_total);
-    }
+    data_fft_total_b[i] += p_b[i];
+    bridge_fft_total_b[i] = data_fft_total_b[i] /
+      ((double)result_total);
   }
 
   // increment the counter for the number of stored results. 
@@ -285,12 +281,7 @@ void *calc_thread(void *param)
 
   pthread_create(&fft0, NULL, fft_thread, arg->e0);
   pthread_create(&fft1, NULL, fft_thread, arg->e1);
-  
-//  boost::thread fft0(&fft, arg->e0); // F(a)
-//  boost::thread fft1(&fft, arg->e1); // F(b)
 
-//  boost::posix_time::time_duration timeout =
-//    boost::posix_time::milliseconds(500);
   pthread_join(fft0, NULL);
   pthread_join(fft1, NULL);
 
@@ -321,11 +312,11 @@ void *calc_thread(void *param)
     }
 
     {
-      for(int i = 0; i < SDLAB_PLOT_LEN; i++){
-        sdlab_cross10_re_buf[i] = data_cross10_re[i] / 10.0;
-        sdlab_cross10_im_buf[i] = data_cross10_im[i] / 10.0;
-        sdlab_fft10_a_buf[i] = data_fft10_a[i] / 10.0;
-        sdlab_fft10_b_buf[i] = data_fft10_b[i] / 10.0;
+      for(int i = 0; i < BRIDGE_LEN; i++){
+        bridge_cross10_re[i] = data_cross10_re[i] / 10.0;
+        bridge_cross10_im[i] = data_cross10_im[i] / 10.0;
+        bridge_fft10_a[i] = data_fft10_a[i] / 10.0;
+        bridge_fft10_b[i] = data_fft10_b[i] / 10.0;
       }
     }
 
@@ -384,12 +375,12 @@ void *recv_thread(void *param){
   }
 
   if(e->comm->get_port() == 0x4000){
-    for(int i = 0; i < SDLAB_PLOT_LEN; i++){
-      sdlab_channel_a_buf[i] = e->cur[2 * i];
+    for(int i = 0; i < BRIDGE_LEN; i++){
+      bridge_channel_a[i] = e->cur[2 * i];
     }
   }else{
     for(int i = 0; i < 1000; i++){
-      sdlab_channel_b_buf[i] = e->cur[2 * i];
+      bridge_channel_b[i] = e->cur[2 * i];
     }
   }
 
@@ -467,25 +458,18 @@ void* sdlab_signal_thread(void *param)
   while(1){
     // receive UDP packets for F(a) and F(b)
     pthread_t th0, th1;
-    
+
     pthread_create(&th0, NULL, recv_thread, &e0);
     pthread_create(&th1, NULL, recv_thread, &e1);
 
     pthread_join(th0, NULL);
     pthread_join(th1, NULL);
-    
-    
-//    boost::thread recv_thread0(&recv_data, &e0);
-//    boost::thread recv_thread1(&recv_data, &e1);
-    // wait for receiving UDP pcakets.
-
 
     swap_buffer(&e0);
     swap_buffer(&e1);
 
     // do FFT operation
     printf("kick calc\n");
-//    boost::thread th(&calc, &arg);
 
     pthread_attr_t tattr;
     pthread_attr_init(&tattr);

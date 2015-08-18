@@ -1,9 +1,9 @@
 #ifndef SDLAB_H
 #define SDLAB_H
 
-#define SDLAB_PLOT_LEN 1024 * 100 //1 Mbyte
+#define BRIDGE_LEN 1024 * 100 //1 Mbyte
 #define AJAX_LENGTH 1024 * 1024
-//#define SDLAB_PLOT_LEN 2 * 1024 * 1024
+//#define BRIDGE_LEN 2 * 1024 * 1024
 
 #define TRUE 1
 #define FALSE 0
@@ -31,23 +31,23 @@ typedef struct
 
 extern int noprintf(const char *s, ...);
 
-extern double sdlab_channel_a_buf[SDLAB_PLOT_LEN];
-extern double sdlab_channel_b_buf[SDLAB_PLOT_LEN];
+extern double bridge_channel_a[BRIDGE_LEN];
+extern double bridge_channel_b[BRIDGE_LEN];
 
-extern double sdlab_cross1_re_buf[SDLAB_PLOT_LEN];
-extern double sdlab_cross1_im_buf[SDLAB_PLOT_LEN];
-extern double sdlab_fft1_a_buf[SDLAB_PLOT_LEN];
-extern double sdlab_fft1_b_buf[SDLAB_PLOT_LEN];
+extern double bridge_cross1_re[BRIDGE_LEN];
+extern double bridge_cross1_im[BRIDGE_LEN];
+extern double bridge_fft1_a[BRIDGE_LEN];
+extern double bridge_fft1_b[BRIDGE_LEN];
 
-extern double sdlab_cross10_re_buf[SDLAB_PLOT_LEN];
-extern double sdlab_cross10_im_buf[SDLAB_PLOT_LEN];
-extern double sdlab_fft10_a_buf[SDLAB_PLOT_LEN];
-extern double sdlab_fft10_b_buf[SDLAB_PLOT_LEN];
+extern double bridge_cross10_re[BRIDGE_LEN];
+extern double bridge_cross10_im[BRIDGE_LEN];
+extern double bridge_fft10_a[BRIDGE_LEN];
+extern double bridge_fft10_b[BRIDGE_LEN];
 
-extern double sdlab_cross_total_re_buf[SDLAB_PLOT_LEN];
-extern double sdlab_cross_total_im_buf[SDLAB_PLOT_LEN];
-extern double sdlab_fft_total_a_buf[SDLAB_PLOT_LEN];
-extern double sdlab_fft_total_b_buf[SDLAB_PLOT_LEN];
+extern double bridge_cross_total_re[BRIDGE_LEN];
+extern double bridge_cross_total_im[BRIDGE_LEN];
+extern double bridge_fft_total_a[BRIDGE_LEN];
+extern double bridge_fft_total_b[BRIDGE_LEN];
 
 
 extern int log_drop_count;
