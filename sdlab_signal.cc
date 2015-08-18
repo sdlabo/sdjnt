@@ -1,11 +1,23 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>/* struct hostent,gethostbyname‚Ì‚½‚ß */
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <math.h>
-#include <time.h>
-#include <float.h>
+#include <stdbool.h>
+#include <unistd.h>
+#include <signal.h>
 #include <pthread.h>
 
-#include "UDPComm.h"
+#include <time.h>
+#include <float.h>
+
+//#include "UDPComm.h"
 #include "fftsg.h"
 #include "sdlab.h"
 
@@ -28,7 +40,9 @@
 // a working data for receiving packet and FFT operation
 struct env{
   // a pointer to the instance of UDP communication
-  UDPComm *comm;
+//  UDPComm *comm;
+  int sock;
+  int port;
   // receiving data buffers, selecting as double buffer
   double  *buf[NUM_OF_ENV_BUFFER];
   // a pointer to the active buffer to receive UDP packet.
@@ -77,6 +91,21 @@ struct system_env{
 };
 
 void *fft_thread(void *param); // FFT wrapper function.
+
+int udp_init(in_addr_t in_addr, int port)
+{
+  int sock;
+  struct sockaddr_in addr;
+
+  sock = socket(AF_INET, SOCK_DGRAM, 0);
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(port);
+  addr.sin_addr.s_addr = in_addr,
+  bind(sock, (struct sockaddr*)&addr, sizeof(struct sockaddr_in));
+
+  return sock;
+}
+
 
 static void * malloc_or_die(size_t sz, const char *msg)
 {
@@ -139,7 +168,9 @@ void env_init(struct env *e, int port){
   fft_thread(e);
 
   // open socket to receive UDP packets
-  e->comm = new UDPComm(INADDR_ANY, port);
+//  e->comm = new UDPComm(INADDR_ANY, port);
+  e->sock = udp_init(INADDR_ANY, port);
+  e->port = port;
 }
 
 void env_free(struct env *e){
@@ -147,7 +178,7 @@ void env_free(struct env *e){
   free(e->buf[1]);
   free(e->ip);
   free(e->w);
-  delete(e->comm);
+//  delete(e->comm);
 }
 
 void *fft_thread(void *param)
@@ -350,7 +381,9 @@ void *recv_thread(void *param){
   int idx = 0;
   int id = 0, prev_id = 0;
   while(idx < DATA_SIZE){
-    e->comm->data_recv(e->recv_buf, sizeof(int) * RECV_BUF_SIZE);
+    //e->comm->data_recv(e->recv_buf, sizeof(int) * RECV_BUF_SIZE);
+    recv(e->sock, e->recv_buf, sizeof(int) * RECV_BUF_SIZE, 0);
+
     int *pi = (int*) e->recv_buf;
     id = ntohl(*pi);
     if(idx == 0 && id != 0){
@@ -374,7 +407,8 @@ void *recv_thread(void *param){
     idx += DATA_BURST_SIZE;
   }
 
-  if(e->comm->get_port() == 0x4000){
+//  if(e->comm->get_port() == 0x4000){
+  if(e->port == 0x4000){
     for(int i = 0; i < BRIDGE_LEN; i++){
       bridge_channel_a[i] = e->cur[2 * i];
     }
