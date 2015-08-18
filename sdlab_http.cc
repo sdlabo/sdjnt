@@ -280,35 +280,35 @@ void* thread_session(void *param){
     exit(-1);
   }else if(strcmp(filename, "html") == 0){
     send_404(sock_client);
-  }else if(strcmp(info.path, "/signal_sine") == 0){
+  }else if(strcmp(info.path, "/signal/sine") == 0){
     send_sinewave(sock_client);
-  }else if(strcmp(info.path, "/signal_channel_a") == 0){
+  }else if(strcmp(info.path, "/signal/channel_a") == 0){
     send_channel_a(sock_client);
-  }else if(strcmp(info.path, "/signal_channel_b") == 0){
+  }else if(strcmp(info.path, "/signal/channel_b") == 0){
     send_channel_b(sock_client);
-  }else if(strcmp(info.path, "/signal_cross1_re") == 0){
+  }else if(strcmp(info.path, "/signal/cross1_re") == 0){
     send_cross1_re(sock_client);
-  }else if(strcmp(info.path, "/signal_cross1_im") == 0){
+  }else if(strcmp(info.path, "/signal/cross1_im") == 0){
     send_cross1_im(sock_client);
-  }else if(strcmp(info.path, "/signal_fft1_a") == 0){
+  }else if(strcmp(info.path, "/signal/fft1_a") == 0){
     send_fft1_a(sock_client);
-  }else if(strcmp(info.path, "/signal_fft1_b") == 0){
+  }else if(strcmp(info.path, "/signal/fft1_b") == 0){
     send_fft1_b(sock_client);
-  }else if(strcmp(info.path, "/signal_cross10_re") == 0){
+  }else if(strcmp(info.path, "/signal/cross10_re") == 0){
     send_cross10_re(sock_client);
-  }else if(strcmp(info.path, "/signal_cross10_im") == 0){
+  }else if(strcmp(info.path, "/signal/cross10_im") == 0){
     send_cross10_im(sock_client);
-  }else if(strcmp(info.path, "/signal_fft10_a") == 0){
+  }else if(strcmp(info.path, "/signal/fft10_a") == 0){
     send_fft10_a(sock_client);
-  }else if(strcmp(info.path, "/signal_fft10_b") == 0){
+  }else if(strcmp(info.path, "/signal/fft10_b") == 0){
     send_fft10_b(sock_client);
-  }else if(strcmp(info.path, "/signal_cross_total_re") == 0){
+  }else if(strcmp(info.path, "/signal/cross_total_re") == 0){
     send_cross_total_re(sock_client);
-  }else if(strcmp(info.path, "/signal_cross_total_im") == 0){
+  }else if(strcmp(info.path, "/signal/cross_total_im") == 0){
     send_cross_total_im(sock_client);
-  }else if(strcmp(info.path, "/signal_fft_total_a") == 0){
+  }else if(strcmp(info.path, "/signal/fft_total_a") == 0){
     send_fft_total_a(sock_client);
-  }else if(strcmp(info.path, "/signal_fft_total_b") == 0){
+  }else if(strcmp(info.path, "/signal/fft_total_b") == 0){
     send_fft_total_b(sock_client);
   }else if(strcmp(info.path, "/cmd/reset") == 0){
     cmd_reset(sock_client, &info);

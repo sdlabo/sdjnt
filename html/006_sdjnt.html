@@ -195,7 +195,7 @@ function task_1sec(){
 }
 
 function get_orig_a(){
-  xmlhttp_orig_a.open("GET", "signal_channel_a", true);
+  xmlhttp_orig_a.open("GET", "/signal/channel_a", true);
   xmlhttp_orig_a.onreadystatechange = function(){
     if(xmlhttp_orig_a.readyState == 4 && xmlhttp_orig_a.status == 200){
       var strData = xmlhttp_orig_a.responseText;
@@ -207,7 +207,7 @@ function get_orig_a(){
 }
 
 function get_orig_b(){
-  xmlhttp_orig_b.open("GET", "signal_channel_b", true);
+  xmlhttp_orig_b.open("GET", "/signal/channel_b", true);
   xmlhttp_orig_b.onreadystatechange = function(){
     if(xmlhttp_orig_b.readyState == 4 && xmlhttp_orig_b.status == 200){
       var strData = xmlhttp_orig_b.responseText;
@@ -219,7 +219,7 @@ function get_orig_b(){
 }
 
 function get_cross1_re(){
-  xmlhttp_cross1_re.open("GET", "signal_cross1_re", true);
+  xmlhttp_cross1_re.open("GET", "/signal/cross1_re", true);
   xmlhttp_cross1_re.onreadystatechange = function(){
     if(xmlhttp_cross1_re.readyState == 4 && xmlhttp_cross1_re.status == 200){
       var strData = xmlhttp_cross1_re.responseText;
@@ -231,7 +231,7 @@ function get_cross1_re(){
 }
 
 function get_cross1_im(){
-  xmlhttp_cross1_im.open("GET", "signal_cross1_im", true);
+  xmlhttp_cross1_im.open("GET", "/signal/cross1_im", true);
   xmlhttp_cross1_im.onreadystatechange = function(){
     if(xmlhttp_cross1_im.readyState == 4 && xmlhttp_cross1_im.status == 200){
       var strData = xmlhttp_cross1_im.responseText;
@@ -243,7 +243,7 @@ function get_cross1_im(){
 }
 
 function get_fft1_a(){
-  xmlhttp_fft1_a.open("GET", "signal_fft1_a", true);
+  xmlhttp_fft1_a.open("GET", "/signal/fft1_a", true);
   xmlhttp_fft1_a.onreadystatechange = function(){
     if(xmlhttp_fft1_a.readyState == 4 && xmlhttp_fft1_a.status == 200){
       var strData = xmlhttp_fft1_a.responseText;
@@ -255,7 +255,7 @@ function get_fft1_a(){
 }
 
 function get_fft1_b(){
-  xmlhttp_fft1_b.open("GET", "signal_fft1_b", true);
+  xmlhttp_fft1_b.open("GET", "/signal/fft1_b", true);
   xmlhttp_fft1_b.onreadystatechange = function(){
     if(xmlhttp_fft1_b.readyState == 4 && xmlhttp_fft1_b.status == 200){
       var strData = xmlhttp_fft1_b.responseText;
@@ -267,7 +267,7 @@ function get_fft1_b(){
 }
 
 function get_cross10_re(){
-  xmlhttp_cross10_re.open("GET", "signal_cross10_re", true);
+  xmlhttp_cross10_re.open("GET", "/signal/cross10_re", true);
   xmlhttp_cross10_re.onreadystatechange = function(){
     if(xmlhttp_cross10_re.readyState == 4 && xmlhttp_cross10_re.status == 200){
       var strData = xmlhttp_cross10_re.responseText;
@@ -279,7 +279,7 @@ function get_cross10_re(){
 }
 
 function get_cross10_im(){
-  xmlhttp_cross10_im.open("GET", "signal_cross10_im", true);
+  xmlhttp_cross10_im.open("GET", "/signal/cross10_im", true);
   xmlhttp_cross10_im.onreadystatechange = function(){
     if(xmlhttp_cross10_im.readyState == 4 && xmlhttp_cross10_im.status == 200){
       var strData = xmlhttp_cross10_im.responseText;
@@ -291,7 +291,7 @@ function get_cross10_im(){
 }
 
 function get_fft10_a(){
-  xmlhttp_fft10_a.open("GET", "signal_fft10_a", true);
+  xmlhttp_fft10_a.open("GET", "/signal/fft10_a", true);
   xmlhttp_fft10_a.onreadystatechange = function(){
     if(xmlhttp_fft10_a.readyState == 4 && xmlhttp_fft10_a.status == 200){
       var strData = xmlhttp_fft10_a.responseText;
@@ -303,7 +303,7 @@ function get_fft10_a(){
 }
 
 function get_fft10_b(){
-  xmlhttp_fft10_b.open("GET", "signal_fft10_b", true);
+  xmlhttp_fft10_b.open("GET", "/signal/fft10_b", true);
   xmlhttp_fft10_b.onreadystatechange = function(){
     if(xmlhttp_fft10_b.readyState == 4 && xmlhttp_fft10_b.status == 200){
       var strData = xmlhttp_fft10_b.responseText;
@@ -317,7 +317,7 @@ function get_fft10_b(){
 //total
 
 function get_cross_total_re(){
-  xmlhttp_cross_total_re.open("GET", "signal_cross_total_re", true);
+  xmlhttp_cross_total_re.open("GET", "/signal/cross_total_re", true);
   xmlhttp_cross_total_re.onreadystatechange = function(){
     if(xmlhttp_cross_total_re.readyState == 4 && xmlhttp_cross_total_re.status == 200){
       var strData = xmlhttp_cross_total_re.responseText;
@@ -329,7 +329,7 @@ function get_cross_total_re(){
 }
 
 function get_cross_total_im(){
-  xmlhttp_cross_total_im.open("GET", "signal_cross_total_im", true);
+  xmlhttp_cross_total_im.open("GET", "/signal/cross_total_im", true);
   xmlhttp_cross_total_im.onreadystatechange = function(){
     if(xmlhttp_cross_total_im.readyState == 4 && xmlhttp_cross_total_im.status == 200){
       var strData = xmlhttp_cross_total_im.responseText;
@@ -341,7 +341,7 @@ function get_cross_total_im(){
 }
 
 function get_fft_total_a(){
-  xmlhttp_fft_total_a.open("GET", "signal_fft_total_a", true);
+  xmlhttp_fft_total_a.open("GET", "/signal/fft_total_a", true);
   xmlhttp_fft_total_a.onreadystatechange = function(){
     if(xmlhttp_fft_total_a.readyState == 4 && xmlhttp_fft_total_a.status == 200){
       var strData = xmlhttp_fft_total_a.responseText;
@@ -353,7 +353,7 @@ function get_fft_total_a(){
 }
 
 function get_fft_total_b(){
-  xmlhttp_fft_total_b.open("GET", "signal_fft_total_b", true);
+  xmlhttp_fft_total_b.open("GET", "/signal/fft_total_b", true);
   xmlhttp_fft_total_b.onreadystatechange = function(){
     if(xmlhttp_fft_total_b.readyState == 4 && xmlhttp_fft_total_b.status == 200){
       var strData = xmlhttp_fft_total_b.responseText;
