@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
+#include <signal.h>
 #include "sdlab_http.h"
 #include "sdlab_signal.h"
 
