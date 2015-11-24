@@ -450,7 +450,7 @@ void *recv_thread(void *param){
       continue;
     }
 
-    if((id - prev_id) > DATA_BURST_SIZE){
+    if((id - prev_id) > DATA_BURST_SIZE / 2){
       printf("!!! Drop a packet: %08x - %08x = %08x\n",
              id, prev_id, id - prev_id);
       log_drop_count++;
