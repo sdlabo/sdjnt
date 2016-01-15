@@ -114,7 +114,14 @@ int udp_init(in_addr_t in_addr, int port)
   sock = socket(AF_INET, SOCK_DGRAM, 0);
   addr.sin_family = AF_INET;
   addr.sin_port = htons(port);
-  addr.sin_addr.s_addr = in_addr,
+  addr.sin_addr.s_addr = in_addr;
+
+  int n = 16 * 1024 * 1024;
+  if(setsockopt(sock, SOL_SOCKET, SO_RCVBUF, &n, sizeof(n)) == -1) {
+    perror("setsockopt");
+    exit(1);
+  }
+
   bind(sock, (struct sockaddr*)&addr, sizeof(struct sockaddr_in));
 
   return sock;
@@ -328,7 +335,7 @@ void* dump_thread(void *param){
 
   printf("opening %s\n", str);
   FILE *fp;
-    // the file is created newly at first.
+  // the file is created newly at first.
   printf("create: %s\n", str);
   fp = fopen(str, "wb");
 
@@ -440,7 +447,7 @@ void *recv_thread(void *param){
   struct env *e = (struct env*) param;
   int idx = 0;
   int id = 0, prev_id = 0;
-  while(idx < DATA_SIZE){
+  while(idx < DATA_SIZE * 2){
     recv(e->sock, e->recv_buf, sizeof(int) * RECV_BUF_SIZE, 0);
 
     int *pi = (int*) e->recv_buf;
@@ -461,11 +468,11 @@ void *recv_thread(void *param){
     for(int i = 0; i < DATA_BURST_SIZE; i++){
       short s = ntohs(data[i]);
       if(i % 2 == 0){
-        e->cur1[2 * (idx + i) + 0] = ((double) s); // Re
-        e->cur1[2 * (idx + i) + 1] = (double) 0; // Im
+        e->cur1[idx + i + 0] = ((double) s); // Re
+        e->cur1[idx + i + 1] = (double) 0; // Im
       }else{
-        e->cur2[2 * (idx + i) + 0] = ((double) s); // Re
-        e->cur2[2 * (idx + i) + 1] = (double) 0; // Im
+        e->cur2[idx + i - 1 + 0] = ((double) s); // Re
+        e->cur2[idx + i - 1 + 1] = (double) 0; // Im
       }
     }
 
